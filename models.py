@@ -4,8 +4,7 @@ from flask_migrate import Migrate
 
 
 app = Flask(__name__)
-db = SQLAlchemy()
-migrate = Migrate(app, db)
+db = SQLAlchemy(app)
 
 
 class Venue(db.Model):
@@ -23,6 +22,7 @@ class Venue(db.Model):
     facebook_link = db.Column(db.String(120))
     seeking_talent=db.Column(db.Boolean,default=False)
     seeking_description=db.Column(db.String(500),default="Not Currently Seeking talent")
+    shows=db.relationship('Shows',backref='venue')
     def __repr__(self):
           return f'{self.name} {self.city} {self.state} {self.address} {self.phone} {self.website} {self.genres} {self.image_link} {self.facebook_link} {self.seeking_talent} {self.seeking_description}'
 
@@ -40,13 +40,14 @@ class Artist(db.Model):
     facebook_link = db.Column(db.String(120))
     seeking_venue = db.Column(db.Boolean,default=False)
     seeking_description = db.Column(db.String(500),default='Not looking for venues')
+    shows =db.relationship('Shows',backref='artist')
 
 class Shows(db.Model):
-      __tablename__='Shows'
-      id =db.Column(db.Integer,primary_key=True)
-      datetime = db.Column(db.DateTime,nullable=False)
-      artistId= db.Column(db.Integer,db.ForeignKey('Artist.id'))
-      venueId = db.Column(db.Integer,db.ForeignKey('Venue.id'))
+    __tablename__='Shows'
+    id =db.Column(db.Integer,primary_key=True)
+    datetime = db.Column(db.DateTime,nullable=False)
+    artistId= db.Column(db.Integer,db.ForeignKey('Artist.id'))
+    venueId = db.Column(db.Integer,db.ForeignKey('Venue.id'))
 
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
